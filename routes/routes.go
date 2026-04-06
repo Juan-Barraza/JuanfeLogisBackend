@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"juanfeLogis/middlewares"
 	"os"
 
 	"github.com/gofiber/fiber/v3"
@@ -33,4 +34,7 @@ func SetRoutes(app *fiber.App) {
 
 	// api publica
 	SetAuthRouter(v1)
+
+	protected := v1.Group("/", middlewares.JWTAuth())
+	SetLocationRouter(protected)
 }
