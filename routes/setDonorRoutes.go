@@ -17,5 +17,6 @@ func SetDonorRouter(api fiber.Router) {
 
 	api.Post("/donors", hdl.Create)
 	api.Get("/donors", hdl.GetAll)
+	api.Get("/donors/:name", hdl.GetByName)
 	api.Put("/donors/:id", hdl.Update)
 }

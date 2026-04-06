@@ -32,7 +32,7 @@ func (r *DonorRepository) GetByID(id string) (*models.Donor, error) {
 
 func (r *DonorRepository) GetByName(name string) (*models.Donor, error) {
 	var donor models.Donor
-	result := r.db.Where("name = ?", name).First(&donor)
+	result := r.db.Where("lower(name) = lower(?)", name).First(&donor)
 	if result.Error != nil {
 		return nil, result.Error
 	}

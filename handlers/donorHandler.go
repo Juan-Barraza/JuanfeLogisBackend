@@ -55,3 +55,12 @@ func (h *DonorHandler) Update(c fiber.Ctx) error {
 	}
 	return c.JSON(res)
 }
+
+func (h *DonorHandler) GetByName(c fiber.Ctx) error {
+	name := c.Params("name")
+	res, err := h.donorService.GetByName(name)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(res)
+}

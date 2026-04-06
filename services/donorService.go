@@ -85,3 +85,13 @@ func (s *DonorService) UpdateDonor(id string, req request.DonorRequest) (*respon
 		ID: donor.ID.String(), Name: donor.Name, Type: donor.Type, CreatedAt: donor.CreatedAt,
 	}, nil
 }
+
+func (s *DonorService) GetByName(name string) (*response.DonorResponse, error) {
+	donor, err := s.donorRepo.GetByName(name)
+	if err != nil {
+		return nil, errors.New("donante no encontrado")
+	}
+	return &response.DonorResponse{
+		ID: donor.ID.String(), Name: donor.Name, Type: donor.Type, CreatedAt: donor.CreatedAt,
+	}, nil
+}
