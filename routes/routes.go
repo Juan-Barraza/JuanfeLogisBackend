@@ -38,4 +38,5 @@ func SetRoutes(app *fiber.App) {
 	protected := v1.Group("/", middlewares.JWTAuth())
 	SetLocationRouter(protected)
 	SetProductTypeRouter(protected)
+	SetDonorRouter(protected)
 }
