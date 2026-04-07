@@ -13,14 +13,14 @@ type Location struct {
 }
 
 type Box struct {
-	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	Name         string    `gorm:"size:100;not null"`
-	LocationID   uint
-	GeneralLabel string `gorm:"size:150"`
-	QRCodeURL    string `gorm:"type:text"`
-	CreatedAt    time.Time
+	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	Name       string    `gorm:"size:100;not null"`
+	LocationID uint
+	QRCodeURL  string `gorm:"type:text"`
+	CreatedAt  time.Time
 
-	Location Location `gorm:"foreignKey:LocationID"` // Relación GORM
+	Location Location      `gorm:"foreignKey:LocationID"`
+	Labels   []ProductType `gorm:"many2many:box_labels;"`
 }
 
 type ProductType struct {
