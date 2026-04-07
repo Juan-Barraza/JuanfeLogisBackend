@@ -37,3 +37,19 @@ func ValidateProductRequest(req request.ProductRequest) error {
 	}
 	return nil
 }
+
+func ValidateBoxStockRequest(req request.BoxStockRequest) error {
+	var sb strings.Builder
+
+	if req.ProductID == "" {
+		sb.WriteString("ProductID es requerido\n")
+	}
+	if req.Quantity == 0 {
+		sb.WriteString("Quantity es requerido\n")
+	}
+
+	if sb.Len() > 0 {
+		return errors.New(sb.String())
+	}
+	return nil
+}
