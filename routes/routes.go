@@ -42,4 +42,5 @@ func SetRoutes(app *fiber.App) {
 	SetBoxRouter(protected)
 	SetProductRouter(protected)
 	SetBoxStockRoutes(protected)
+	SetupDashboardRoutes(protected)
 }
