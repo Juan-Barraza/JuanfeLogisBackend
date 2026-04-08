@@ -23,9 +23,20 @@ func (r *BoxRepository) Update(box *models.Box) error {
 	return r.db.Save(box).Error
 }
 
-func (r *BoxRepository) FindAllQuery() (*gorm.DB, []models.Box, error) {
+func (r *BoxRepository) FindAllQuery(name string, location string) (*gorm.DB, []models.Box, error) {
 	var boxes []models.Box
-	result := r.db.Model(&models.Box{}).Preload("Location").Preload("Labels").Find(&boxes)
+	query := r.db.Model(&models.Box{}).Preload("Location").Preload("Labels")
+
+	if name != "" {
+		query = query.Where("boxes.name LIKE ?", "%"+name+"%")
+	}
+	if location != "" {
+		// Buscamos en la tabla relacionada de ubicaciones
+		query = query.Joins("Join locations On locations.id = boxes.location_id").
+			Where("locations.name LIKE ?", "%"+location+"%")
+	}
+
+	result := query.Find(&boxes)
 	return result, boxes, result.Error
 }
 
@@ -58,12 +69,13 @@ func (r *BoxRepository) Delete(id string) error {
 	return r.db.Unscoped().Delete(&models.Box{}, "id = ?", id).Error
 }
 
-func (r *BoxRepository) SetLabels(boxID string, labelIDs []uint) error {
+func (r *BoxRepository) SetLabels(boxID string, labelIDs []uint) ([]models.ProductType, error) {
 	var productTypes []models.ProductType
 	if err := r.db.Where("id IN ?", labelIDs).Find(&productTypes).Error; err != nil {
-		return err
+		return nil, err
 	}
 
 	box := &models.Box{ID: uuid.MustParse(boxID)}
-	return r.db.Model(box).Association("Labels").Replace(productTypes)
+	err := r.db.Model(box).Association("Labels").Replace(productTypes)
+	return productTypes, err
 }

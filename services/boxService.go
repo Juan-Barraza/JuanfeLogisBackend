@@ -30,9 +30,11 @@ func (s *BoxService) CreateBox(req request.BoxRequest) (*response.BoxResponse, e
 		return nil, errors.New("error al crear la caja")
 	}
 	if len(req.LabelIDs) > 0 {
-		if err := s.boxRepo.SetLabels(box.ID.String(), req.LabelIDs); err != nil {
+		labels, err := s.boxRepo.SetLabels(box.ID.String(), req.LabelIDs)
+		if err != nil {
 			return nil, errors.New("error al asignar etiquetas")
 		}
+		box.Labels = labels
 	}
 
 	// 2. Generamos el QR pasando el nuevo ID
@@ -84,10 +86,13 @@ func (s *BoxService) UpdateBox(id string, req request.BoxRequest) (*response.Box
 	if req.LocationID != 0 {
 		box.LocationID = req.LocationID
 	}
-	if len(req.LabelIDs) > 0 {
-		if err := s.boxRepo.SetLabels(box.ID.String(), req.LabelIDs); err != nil {
+	if req.LabelIDs != nil {
+		labels, err := s.boxRepo.SetLabels(box.ID.String(), req.LabelIDs)
+		if err != nil {
 			return nil, errors.New("error al asignar etiquetas")
 		}
+		// Sincronizamos el objeto en memoria para que el posterior Update no ruidoso
+		box.Labels = labels
 	}
 
 	if err := s.boxRepo.Update(box); err != nil {
@@ -122,9 +127,9 @@ func (s *BoxService) DeleteBox(id string) error {
 	return nil
 }
 
-func (s *BoxService) GetAllBoxes(pagination *utils.Pagination) (*utils.Pagination, error) {
-	// 1. Ejecutamos la query genérica que nos devuelve el repo
-	result, boxes, err := s.boxRepo.FindAllQuery()
+func (s *BoxService) GetAllBoxes(pagination *utils.Pagination, name string, location string) (*utils.Pagination, error) {
+	// 1. Ejecutamos la query que ahora maneja los filtros en el repo
+	result, boxes, err := s.boxRepo.FindAllQuery(name, location)
 	if err != nil {
 		return nil, errors.New("error al obtener las cajas")
 	}
