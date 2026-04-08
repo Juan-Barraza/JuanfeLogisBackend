@@ -49,13 +49,15 @@ func (h *BoxHandler) Create(c fiber.Ctx) error {
 func (h *BoxHandler) GetAll(c fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "10"))
+	name := c.Query("name", "")
+	location := c.Query("location", "")
 
 	pagination := &utils.Pagination{
 		Page:     page,
 		PageSize: pageSize,
 	}
 
-	res, err := h.boxService.GetAllBoxes(pagination)
+	res, err := h.boxService.GetAllBoxes(pagination, name, location)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -106,7 +108,13 @@ func (h *BoxHandler) GetQR(c fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "caja no encontrada"})
 	}
 
-	pngBytes, err := qrcode.Encode(box.QRCodeURL, qrcode.Medium, 256)
+	qrData := box.QRCodeURL
+	if qrData == "" {
+		// Respaldamos generando el QR si el campo está vacío en DB
+		qrData = utils.GenerateBoxQR(id)
+	}
+
+	pngBytes, err := qrcode.Encode(qrData, qrcode.Medium, 256)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "error generando QR"})
 	}
