@@ -38,13 +38,17 @@ func (h *ProductHandler) Create(c fiber.Ctx) error {
 func (h *ProductHandler) GetAll(c fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "10"))
+	itemType := c.Query("type", "")
+	donor := c.Query("donor", "")
+	size := c.Query("size", "")
+	disposition := c.Query("disposition", "")
 
 	pagination := &utils.Pagination{
 		Page:     page,
 		PageSize: pageSize,
 	}
 
-	res, err := h.productService.GetAllProducts(pagination)
+	res, err := h.productService.GetAllProducts(pagination, itemType, donor, size, disposition)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

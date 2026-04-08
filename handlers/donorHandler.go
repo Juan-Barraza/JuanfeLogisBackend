@@ -32,11 +32,12 @@ func (h *DonorHandler) Create(c fiber.Ctx) error {
 func (h *DonorHandler) GetAll(c fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "10"))
+	name := c.Query("name", "")
 	pagination := &utils.Pagination{
 		Page:     page,
 		PageSize: pageSize,
 	}
-	res, err := h.donorService.GetAllDonors(pagination)
+	res, err := h.donorService.GetAllDonors(pagination, name)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
