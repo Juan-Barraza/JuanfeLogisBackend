@@ -87,8 +87,8 @@ func (s *ProductService) UpdateProduct(id string, req request.ProductRequest) (*
 	return s.toProductResponse(updatedProduct), nil
 }
 
-func (s *ProductService) GetAllProducts(pagination *utils.Pagination) (*utils.Pagination, error) {
-	result, products, err := s.productRepo.FindAllQuery()
+func (s *ProductService) GetAllProducts(pagination *utils.Pagination, itemType, donor, size, disposition string) (*utils.Pagination, error) {
+	result, products, err := s.productRepo.FindAllQuery(itemType, donor, size, disposition)
 	if err != nil {
 		return nil, errors.New("error al obtener los productos")
 	}

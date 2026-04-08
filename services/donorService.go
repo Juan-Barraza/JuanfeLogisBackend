@@ -42,8 +42,8 @@ func (s *DonorService) CreateDonor(req request.DonorRequest) (*response.DonorRes
 	}, nil
 }
 
-func (s *DonorService) GetAllDonors(pagination *utils.Pagination) (*utils.Pagination, error) {
-	query, donors, err := s.donorRepo.FindAll()
+func (s *DonorService) GetAllDonors(pagination *utils.Pagination, name string) (*utils.Pagination, error) {
+	query, donors, err := s.donorRepo.FindAll(name)
 	if err != nil {
 		return nil, errors.New("error al obtener donantes")
 	}

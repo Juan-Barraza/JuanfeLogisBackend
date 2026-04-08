@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Location struct {
@@ -18,6 +19,7 @@ type Box struct {
 	LocationID uint
 	QRCodeURL  string `gorm:"type:text"`
 	CreatedAt  time.Time
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 
 	Location Location      `gorm:"foreignKey:LocationID"`
 	Labels   []ProductType `gorm:"many2many:box_labels;"`
@@ -45,6 +47,7 @@ type Product struct {
 	PhysicalCondition string  `gorm:"size:50"`
 	Disposition       string  `gorm:"size:50"`
 	CreatedAt         time.Time
+	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"`
 
 	ProductType ProductType `gorm:"foreignKey:ProductTypeID"`
 	Donor       Donor       `gorm:"foreignKey:DonorID"`

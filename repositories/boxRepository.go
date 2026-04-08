@@ -77,7 +77,7 @@ func (r *BoxRepository) Delete(id string) error {
 		r.db.Model(&models.Box{ID: boxID}).Association("Labels").Clear()
 	}
 
-	return r.db.Unscoped().Delete(&models.Box{}, "id = ?", id).Error
+	return r.db.Delete(&models.Box{}, "id = ?", id).Error
 }
 
 func (r *BoxRepository) SetLabels(boxID string, labelIDs []uint) ([]models.ProductType, error) {

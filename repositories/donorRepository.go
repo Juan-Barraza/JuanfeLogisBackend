@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"juanfeLogis/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -18,9 +19,13 @@ func (r *DonorRepository) Create(donor *models.Donor) error {
 	return r.db.Create(donor).Error
 }
 
-func (r *DonorRepository) FindAll() (*gorm.DB, []models.Donor, error) {
+func (r *DonorRepository) FindAll(name string) (*gorm.DB, []models.Donor, error) {
 	var donors []models.Donor
-	result := r.db.Find(&donors)
+	query := r.db.Model(&models.Donor{})
+	if name != "" {
+		query = query.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(name)+"%")
+	}
+	result := query.Find(&donors)
 	return result, donors, result.Error
 }
 

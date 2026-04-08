@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"juanfeLogis/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -22,9 +23,31 @@ func (r *ProductRepository) Update(product *models.Product) error {
 	return r.db.Save(product).Error
 }
 
-func (r *ProductRepository) FindAllQuery() (*gorm.DB, []models.Product, error) {
+func (r *ProductRepository) FindAllQuery(itemType, donor, size, disposition string) (*gorm.DB, []models.Product, error) {
 	var products []models.Product
-	result := r.db.Model(&models.Product{}).Preload("ProductType").Preload("Donor").Find(&products)
+	query := r.db.Model(&models.Product{}).
+		Preload("ProductType").
+		Preload("Donor")
+
+	if itemType != "" {
+		query = query.Joins("Join product_types On product_types.id = products.product_type_id").
+			Where("LOWER(product_types.name) LIKE ?", "%"+strings.ToLower(itemType)+"%")
+	}
+
+	if donor != "" {
+		query = query.Joins("Join donors On donors.id = products.donor_id").
+			Where("LOWER(donors.name) LIKE ?", "%"+strings.ToLower(donor)+"%")
+	}
+
+	if size != "" {
+		query = query.Where("LOWER(products.size) LIKE ?", "%"+strings.ToLower(size)+"%")
+	}
+
+	if disposition != "" {
+		query = query.Where("LOWER(products.disposition) = LOWER(?)", disposition)
+	}
+
+	result := query.Find(&products)
 	return result, products, result.Error
 }
 
@@ -38,5 +61,5 @@ func (r *ProductRepository) GetByID(id string) (*models.Product, error) {
 }
 
 func (r *ProductRepository) Delete(id string) error {
-	return r.db.Unscoped().Delete(&models.Product{}, "id = ?", id).Error
+	return r.db.Delete(&models.Product{}, "id = ?", id).Error
 }
