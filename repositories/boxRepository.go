@@ -70,6 +70,13 @@ func (r *BoxRepository) GetByID(id string) (*models.Box, error) {
 }
 
 func (r *BoxRepository) Delete(id string) error {
+	// Parseamos el id para usarlo en la limpieza de asociaciones
+	boxID, err := uuid.Parse(id)
+	if err == nil {
+		// Eliminamos las relaciones en la tabla intermedia box_labels
+		r.db.Model(&models.Box{ID: boxID}).Association("Labels").Clear()
+	}
+
 	return r.db.Unscoped().Delete(&models.Box{}, "id = ?", id).Error
 }
 
