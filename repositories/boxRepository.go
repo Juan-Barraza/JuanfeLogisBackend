@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"juanfeLogis/models"
+	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -27,13 +28,16 @@ func (r *BoxRepository) FindAllQuery(name string, location string) (*gorm.DB, []
 	var boxes []models.Box
 	query := r.db.Model(&models.Box{}).Preload("Location").Preload("Labels")
 
+	name = strings.ToLower(name)
+	location = strings.ToLower(location)
+
 	if name != "" {
-		query = query.Where("boxes.name LIKE ?", "%"+name+"%")
+		query = query.Where("LOWER(boxes.name) LIKE ?", "%"+name+"%")
 	}
 	if location != "" {
 		// Buscamos en la tabla relacionada de ubicaciones
 		query = query.Joins("Join locations On locations.id = boxes.location_id").
-			Where("locations.name LIKE ?", "%"+location+"%")
+			Where("LOWER(locations.name) LIKE ?", "%"+location+"%")
 	}
 
 	result := query.Find(&boxes)
