@@ -127,9 +127,9 @@ func (s *BoxService) DeleteBox(id string) error {
 	return nil
 }
 
-func (s *BoxService) GetAllBoxes(pagination *utils.Pagination, name string, location string) (*utils.Pagination, error) {
+func (s *BoxService) GetAllBoxes(pagination *utils.Pagination, name string, location string, productId string) (*utils.Pagination, error) {
 	// 1. Ejecutamos la query que ahora maneja los filtros en el repo
-	result, boxes, err := s.boxRepo.FindAllQuery(name, location)
+	result, boxes, err := s.boxRepo.FindAllQuery(name, location, productId)
 	if err != nil {
 		return nil, errors.New("error al obtener las cajas")
 	}
