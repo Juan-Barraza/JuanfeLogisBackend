@@ -24,7 +24,7 @@ func (r *BoxRepository) Update(box *models.Box) error {
 	return r.db.Save(box).Error
 }
 
-func (r *BoxRepository) FindAllQuery(name string, location string) (*gorm.DB, []models.Box, error) {
+func (r *BoxRepository) FindAllQuery(name string, location string, productId string) (*gorm.DB, []models.Box, error) {
 	var boxes []models.Box
 	query := r.db.Model(&models.Box{}).Preload("Location").Preload("Labels")
 
@@ -39,10 +39,19 @@ func (r *BoxRepository) FindAllQuery(name string, location string) (*gorm.DB, []
 		query = query.Joins("Join locations On locations.id = boxes.location_id").
 			Where("LOWER(locations.name) LIKE ?", "%"+location+"%")
 	}
+	if productId != "" {
+		// Subquery: solo cajas donde ese producto tiene stock > 0
+		// Usamos IN en lugar de JOIN+Distinct para que Preload("Location") funcione correctamente
+		subQuery := r.db.Model(&models.BoxStock{}).
+			Select("box_id").
+			Where("product_id = ? AND quantity > 0", productId)
+		query = query.Where("boxes.id IN (?)", subQuery)
+	}
 
 	result := query.Find(&boxes)
 	return result, boxes, result.Error
 }
+
 
 func (r *BoxRepository) GetBoxWithStock(boxID string) (*models.Box, []models.BoxStock, error) {
 	var box models.Box

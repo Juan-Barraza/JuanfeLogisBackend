@@ -51,19 +51,21 @@ func (h *BoxHandler) GetAll(c fiber.Ctx) error {
 	pageSize, _ := strconv.Atoi(c.Query("page_size", "10"))
 	name := c.Query("name", "")
 	location := c.Query("location", "")
+	productId := c.Query("productId", "")
 
 	pagination := &utils.Pagination{
 		Page:     page,
 		PageSize: pageSize,
 	}
 
-	res, err := h.boxService.GetAllBoxes(pagination, name, location)
+	res, err := h.boxService.GetAllBoxes(pagination, name, location, productId)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.JSON(res)
 }
+
 
 func (h *BoxHandler) GetByID(c fiber.Ctx) error {
 	id := c.Params("id")
