@@ -12,7 +12,8 @@ type Transaction struct {
 	UserID    uuid.UUID
 	CreatedAt time.Time
 
-	User User `gorm:"foreignKey:UserID"`
+	User  User              `gorm:"foreignKey:UserID"`
+	Items []TransactionItem `gorm:"foreignKey:TransactionID"`
 }
 
 type TransactionItem struct {
