@@ -15,10 +15,19 @@ import (
 type ProductService struct {
 	productRepo    *repositories.ProductRepository
 	paginationRepo *repositories.PaginationRepository
+	boxStockRepo   *repositories.BoxStockRepository
 }
 
-func NewProductService(productRepo *repositories.ProductRepository, paginationRepo *repositories.PaginationRepository) *ProductService {
-	return &ProductService{productRepo: productRepo, paginationRepo: paginationRepo}
+func NewProductService(
+	productRepo *repositories.ProductRepository,
+	paginationRepo *repositories.PaginationRepository,
+	boxStockRepo *repositories.BoxStockRepository,
+) *ProductService {
+	return &ProductService{
+		productRepo:    productRepo,
+		paginationRepo: paginationRepo,
+		boxStockRepo:   boxStockRepo,
+	}
 }
 
 func (s *ProductService) CreateProduct(req request.ProductRequest) (*response.ProductResponse, error) {
@@ -35,6 +44,7 @@ func (s *ProductService) CreateProduct(req request.ProductRequest) (*response.Pr
 		SalePrice:         req.SalePrice,
 		PhysicalCondition: req.PhysicalCondition,
 		Disposition:       req.Disposition,
+		Description:       req.Description,
 	}
 
 	if err := s.productRepo.Create(product); err != nil {
@@ -77,6 +87,9 @@ func (s *ProductService) UpdateProduct(id string, req request.ProductRequest) (*
 	if req.Disposition != "" {
 		product.Disposition = req.Disposition
 	}
+	if req.Description != "" {
+		product.Description = req.Description
+	}
 
 	if err := s.productRepo.Update(product); err != nil {
 		return nil, errors.New("error al actualizar el producto")
@@ -115,9 +128,24 @@ func (s *ProductService) GetByID(id string) (*response.ProductResponse, error) {
 }
 
 func (s *ProductService) DeleteProduct(id string) error {
-	_, err := s.productRepo.GetByID(id)
+	productID, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("uuid inválido")
+	}
+
+	_, err = s.productRepo.GetByID(id)
 	if err != nil {
 		return errors.New("el producto no existe")
+	}
+
+	// Regla de Negocio: No borrar si hay stock
+	totalStock, err := s.boxStockRepo.GetTotalQuantityByProductID(productID)
+	if err != nil {
+		return errors.New("error al verificar el stock del producto")
+	}
+
+	if totalStock > 0 {
+		return fmt.Errorf("no se puede eliminar: el producto tiene aún %d unidades en cajas", totalStock)
 	}
 
 	if err := s.productRepo.Delete(id); err != nil {
@@ -138,5 +166,8 @@ func (s *ProductService) toProductResponse(product *models.Product) *response.Pr
 		SalePrice:         product.SalePrice,
 		PhysicalCondition: product.PhysicalCondition,
 		Disposition:       product.Disposition,
+		Description:       product.Description,
+		CreatedAt:         product.CreatedAt.Format("2006-01-02"),
+		UpdatedAt:         product.UpdatedAt.Format("2006-01-02"),
 	}
 }

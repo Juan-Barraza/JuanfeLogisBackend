@@ -45,3 +45,12 @@ func (r *BoxStockRepository) GetByProduct(productID uuid.UUID) ([]models.BoxStoc
 	err := r.db.Where("product_id = ?", productID).Find(&stocks).Error
 	return stocks, err
 }
+
+func (r *BoxStockRepository) GetTotalQuantityByProductID(productID uuid.UUID) (int, error) {
+	var total int
+	err := r.db.Model(&models.BoxStock{}).
+		Where("product_id = ?", productID).
+		Select("COALESCE(SUM(quantity), 0)").
+		Row().Scan(&total)
+	return total, err
+}

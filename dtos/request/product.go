@@ -8,4 +8,5 @@ type ProductRequest struct {
 	SalePrice         float64 `json:"sale_price"`
 	PhysicalCondition string  `json:"physical_condition"`
 	Disposition       string  `json:"disposition"`
+	Description       string  `json:"description"`
 }

@@ -46,7 +46,9 @@ type Product struct {
 	SalePrice         float64 `gorm:"type:decimal(10,2);not null"`
 	PhysicalCondition string  `gorm:"size:50"`
 	Disposition       string  `gorm:"size:50"`
+	Description       string  `gorm:"type:text"`
 	CreatedAt         time.Time
+	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"`
 
 	ProductType ProductType `gorm:"foreignKey:ProductTypeID"`

@@ -1,6 +1,6 @@
 package response
 
-import "time"
+
 
 type ProductResponse struct {
 	ID                string    `json:"id"`
@@ -13,6 +13,7 @@ type ProductResponse struct {
 	SalePrice         float64   `json:"sale_price"`
 	PhysicalCondition string    `json:"physical_condition"`
 	Disposition       string    `json:"disposition"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	Description       string    `json:"description"`
+	CreatedAt         string    `json:"created_at"`
+	UpdatedAt         string    `json:"updated_at"`
 }

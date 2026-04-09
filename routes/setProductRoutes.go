@@ -12,7 +12,8 @@ import (
 func SetProductRouter(api fiber.Router) {
 	productRepo := repositories.NewProductRepository(config.DB)
 	paginationRepo := repositories.NewPaginationRepository(config.DB)
-	productService := services.NewProductService(productRepo, paginationRepo)
+	boxStockRepo := repositories.NewBoxStockRepository(config.DB)
+	productService := services.NewProductService(productRepo, paginationRepo, boxStockRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
 	api.Get("/products", productHandler.GetAll)
