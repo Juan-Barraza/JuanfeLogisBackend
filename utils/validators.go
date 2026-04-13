@@ -16,12 +16,6 @@ func ValidateProductRequest(req request.ProductRequest) error {
 	if req.DonorID == "" {
 		sb.WriteString("DonorID es requerido\n")
 	}
-	if req.Size == "" {
-		sb.WriteString("Size es requerido\n")
-	}
-	if req.DonationPrice == 0 {
-		sb.WriteString("DonationPrice es requerido\n")
-	}
 	if req.SalePrice == 0 {
 		sb.WriteString("SalePrice es requerido\n")
 	}
