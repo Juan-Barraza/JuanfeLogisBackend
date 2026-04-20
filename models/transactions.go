@@ -21,10 +21,10 @@ type TransactionItem struct {
 	TransactionID uuid.UUID
 	ProductID     uuid.UUID
 	BoxID         uuid.UUID
-	Quantity      int       `gorm:"not null"`
-	AppliedPrice  float64   `gorm:"type:decimal(10,2);not null"`
-
-	Transaction Transaction `gorm:"foreignKey:TransactionID"`
-	Product     Product     `gorm:"foreignKey:ProductID"`
-	Box         Box         `gorm:"foreignKey:BoxID"`
+	Quantity      int     `gorm:"not null"`
+	AppliedPrice  float64 `gorm:"type:decimal(10,2);not null"`
+	Destination   *string
+	Transaction   Transaction `gorm:"foreignKey:TransactionID"`
+	Product       Product     `gorm:"foreignKey:ProductID"`
+	Box           Box         `gorm:"foreignKey:BoxID"`
 }
