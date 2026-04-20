@@ -64,6 +64,7 @@ func (s *TransactionService) GetTransactionByID(id string) (*response.Transactio
 			BoxName:      item.Box.Name,
 			Quantity:     item.Quantity,
 			AppliedPrice: item.AppliedPrice,
+			Destination:  item.Destination,
 		}
 	}
 

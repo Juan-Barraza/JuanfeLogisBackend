@@ -72,7 +72,7 @@ func (s *BoxStockService) AddStock(boxID uuid.UUID, req request.BoxStockRequest,
 		}
 
 		// C. Registrar en el Historial usando DonationPrice
-		return s.registerTransactionTx(tx, "entrada", userID, productID, boxID, req.Quantity, product.DonationPrice)
+		return s.registerTransactionTx(tx, "entrada", userID, productID, boxID, req.Quantity, product.DonationPrice, nil)
 	})
 }
 
@@ -114,7 +114,7 @@ func (s *BoxStockService) RemoveStock(boxID uuid.UUID, req request.BoxStockReque
 		}
 
 		// C. Registrar en el Historial usando SalePrice
-		return s.registerTransactionTx(tx, "salida", userID, productID, boxID, req.Quantity, product.SalePrice)
+		return s.registerTransactionTx(tx, "salida", userID, productID, boxID, req.Quantity, product.SalePrice, req.Destination)
 	})
 }
 
@@ -149,7 +149,7 @@ func (s *BoxStockService) ReturnStock(boxID uuid.UUID, req request.BoxStockReque
 		}
 
 		// C. Registrar en el Historial usando SalePrice
-		return s.registerTransactionTx(tx, "devolucion", userID, productID, boxID, req.Quantity, product.SalePrice)
+		return s.registerTransactionTx(tx, "devolucion", userID, productID, boxID, req.Quantity, product.SalePrice, nil)
 	})
 }
 
@@ -159,6 +159,7 @@ func (s *BoxStockService) registerTransactionTx(
 	userID, productID, boxID uuid.UUID,
 	quantity int,
 	appliedPrice float64,
+	destination *string,
 ) error {
 
 	transaction := &models.Transaction{
@@ -176,6 +177,7 @@ func (s *BoxStockService) registerTransactionTx(
 		ProductID:     productID,
 		BoxID:         boxID,
 		Quantity:      quantity,
+		Destination:   destination,
 		AppliedPrice:  appliedPrice,
 	}
 	return tx.Create(item).Error

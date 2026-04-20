@@ -18,6 +18,7 @@ type TransactionItemResponse struct {
 	BoxName      string  `json:"box_name"`
 	Quantity     int     `json:"quantity"`
 	AppliedPrice float64 `json:"applied_price"`
+	Destination  *string `json:"destination"`
 }
 
 type TransactionDetailResponse struct {
